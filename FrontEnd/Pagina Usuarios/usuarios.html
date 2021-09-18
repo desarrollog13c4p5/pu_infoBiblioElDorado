@@ -67,13 +67,70 @@
                             </div>
                         </form>
                     </div>
-
-
                 </div>
 
                 <!-- Lista de Usuarios -->
                 <div class="row card">
-                   <h5>Lista de usuarios (pendiente)</h5> 
+                    <div class="card-body">
+                        <h5 class="card-title">Lista de Usuarios</h5>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label for="inputFiltro" class="col-form-label">Filtrar</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="text" id="inputFiltro" class="form-control">
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-primary">Aplicar</button>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-secondary">Limpiar</button>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Apelido</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0003</td>
+                                        <td>Adriana María</td>
+                                        <td>Perez Oviedo</td>
+                                        <td>
+                                            <button onclick="" class="btn btn-outline-success btn-sm">Editar</button>
+                                            <button onclick="" class="btn btn-outline-danger btn-sm">Borrar</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>0002</td>
+                                        <td>Jorge</td>
+                                        <td>Diaz</td>
+                                        <td>
+                                            <button onclick="" class="btn btn-outline-success btn-sm">Editar</button>
+                                            <button onclick="" class="btn btn-outline-danger btn-sm">Borrar</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>0001</td>
+                                        <td>Pedro</td>
+                                        <td>Umba</td>
+                                        <td>
+                                            <button onclick="" class="btn btn-outline-success btn-sm">Editar</button>
+                                            <button onclick="" class="btn btn-outline-danger btn-sm">Borrar</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
