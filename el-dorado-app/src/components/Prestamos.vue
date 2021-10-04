@@ -75,7 +75,7 @@
           </div>
         </div>
         <div class="col-auto">
-          <button class="btn btn-primary">Buscar</button>
+          <button class="btn btn-primary" @click="showMod">Buscar</button>
         </div>
       </div>
     </div>
@@ -150,10 +150,12 @@
         </tbody>
       </table>
     </div>
+    
   </div>
 </template>
 
 <script>
+
 export default {
   data() {
     return {
@@ -163,6 +165,7 @@ export default {
         fecha: "",
       },
       filtro: "",
+      modEstado: "",
     };
   },
 
@@ -173,14 +176,16 @@ export default {
           "Prestando libro: " +
             this.prestamo.libro +
             " a " +
-            this.prestamo.usuario + " hasta " + this.prestamo.fecha
+            this.prestamo.usuario +
+            " hasta " +
+            this.prestamo.fecha
         );
         // this.$router.push({ name: "prestamos" });
         this.prestamo.libro = "";
         this.prestamo.usuario = "";
         this.prestamo.fecha = "";
       } else {
-        alert("Falta seeccionar un ibro para prestar!")
+        alert("Falta seeccionar un libro para prestar!");
       }
     },
 
@@ -191,6 +196,7 @@ export default {
     entregarLibro(libro) {
       prompt("Desea entregar el Libro " + libro + " (S/n) ?", "S");
     },
+
   },
 };
 </script>

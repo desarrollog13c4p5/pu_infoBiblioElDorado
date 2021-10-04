@@ -4,7 +4,13 @@ import App from './App.vue'
 import "bootstrap/dist/css/bootstrap.min.css"
 import router from './router'
 
-Vue.config.productionTip = false
+import VModal from 'vue-js-modal'
+
+Vue.config.productionTip = false;
+
+Vue.prototype.$test = 'Not Approved';
+
+Vue.use(VModal, {})
 
 new Vue({
   router,

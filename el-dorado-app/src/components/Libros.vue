@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Crear Libros -->
+    <!-- Crear Libro -->
     <div class="row">
       <form @submit.prevent="handleSubmitForm">
         <h5>Crear Libro</h5>
@@ -9,7 +9,7 @@
             <input
               type="text"
               id="inNombre"
-              v-model="libro.nombre"
+              v-model="nuevoLibro.nombre"
               placeholder="Nombre del Libro"
               class="form-control"
               required
@@ -22,21 +22,27 @@
             <input
               type="text"
               id="inAutor"
-              v-model="libro.autor"
+              v-model="nuevoLibro.autor"
               placeholder="Autor del Libro"
               class="form-control"
               required
             />
           </div>
           <div class="col">
-            <button class="btn btn-primary">Crear</button>
+            <button class="btn btn-primary" :disabled="bloquear">Crear</button>
           </div>
         </div>
         <div class="col">
           <div class="row"></div>
         </div>
         <hr />
+
       </form>
+    </div>
+
+    <!-- Alertas -->
+    <div class="alert alert-danger" role="alert" v-if="this.mensajeError != ''">
+      {{mensajeError}}
     </div>
 
     <!-- Lista de Libros -->
@@ -53,13 +59,14 @@
           />
         </div>
         <div class="col-auto px-1">
-          <button class="btn btn-primary">Aplicar</button>
+          <button class="btn btn-primary" :disabled="bloquear">Aplicar</button>
         </div>
         <div class="col-auto px-1">
-          <button class="btn btn-secondary">Limpiar</button>
+          <button class="btn btn-secondary" :disabled="bloquear">Limpiar</button>
         </div>
       </div>
 
+      <!-- Tabla -->
       <div class="row ps-4 pe-1">
         <table class="table table-sm table-bordered">
           <thead>
@@ -71,80 +78,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>0004</td>
-              <td>Los Gatos</td>
-              <td>Adriana Perez</td>
+            <tr  v-for="item in Libros" :key="item.id">
+              <td>{{ item.id }}</td>
+              <td>{{ item.nombre }}</td>
+              <td>{{ item.autor }}</td>
               <td id="cent">
                 <button
-                  @click.prevent="editarLibro('Los Gatos', 'Adriana Perez')"
+                  @click.prevent="editarLibro(item.id, item.nombre)"
                   class="btn btn-outline-success btn-sm p-1"
                 >
                   Editar
                 </button>
                 <button
-                  @click.prevent="borrarLibro('Los Gatos')"
-                  class="btn btn-outline-danger btn-sm p-1"
-                >
-                  Borrar
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>0003</td>
-              <td>Atlas de Colombia</td>
-              <td>Jorge Diaz</td>
-              <td id="cent">
-                <button
-                  @click.prevent="
-                    editarLibro('Atlas de Colombia', 'Jorge Diaz')
-                  "
-                  class="btn btn-outline-success btn-sm p-1"
-                >
-                  Editar
-                </button>
-                <button
-                  @click.prevent="borrarLibro('Atas de Colombia')"
-                  class="btn btn-outline-danger btn-sm p-1"
-                >
-                  Borrar
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>0002</td>
-              <td>El cuerpo Humano</td>
-              <td>Sandra Reyes</td>
-              <td id="cent">
-                <button
-                  @click.prevent="
-                    editarLibro('El cuerpo Humano', 'Sandra Reyes')
-                  "
-                  class="btn btn-outline-success btn-sm p-1"
-                >
-                  Editar
-                </button>
-                <button
-                  @click.prevent="borrarLibro('El cuerpo Humano')"
-                  class="btn btn-outline-danger btn-sm p-1"
-                >
-                  Borrar
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>0001</td>
-              <td>Brujas</td>
-              <td>Anonimo</td>
-              <td id="cent">
-                <button
-                  @click.prevent="editarLibro('Brujas', 'Anonimo')"
-                  class="btn btn-outline-success btn-sm p-1"
-                >
-                  Editar
-                </button>
-                <button
-                  @click.prevent="borrarLibro('Brujas')"
+                  @click.prevent="borrarLibro(item.id, item.nombre)"
                   class="btn btn-outline-danger btn-sm p-1"
                 >
                   Borrar
@@ -155,38 +101,68 @@
         </table>
       </div>
     </div>
-  </div>
+
+  </div> 
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
-      libro: {
+      nuevoLibro: {
         nombre: "",
         autor: "",
       },
       filtro: "",
+      mensajeError: "",
+      bloquear: true,
+      Libros: [],
+      libroBorrar: {
+        id: "",
+        nombre: ""
+      },
     };
   },
 
+  created() {
+    console.log('Listando Libros');
+    this.listarLibros();
+  },
+
   methods: {
-    handleSubmitForm() {
-      alert("Creando Libro: " + this.libro.nombre + " " + this.libro.autor);
-      // this.$router.push({ name: "libros" });
-      this.libro.nombre = "";
-      this.libro.autor = "";
+    handleSubmitForm() {  // Crear Libro
+      alert('Creando Libro' + this.nuevoLibro.nombre + ' - ' + this.nuevoLibro.autor)
+    },
+
+    listarLibros() {
+      axios
+        .get('http://localhost:4000/api/libros')
+        .then((res) => {
+          this.Libros = res.data.reverse();
+          console.log(JSON.stringify(this.Libros));
+          this.mensajeError = ""
+          this.bloquear = false;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "No se puede traer la lista de Libros."
+        });
+      
+      this.nuevoLibro.nombre = "";
+      this.nuevoLibro.autor = "";
       this.filtro = "";
     },
 
-    borrarLibro(nombre) {
-      prompt("Desea borrar el libro " + nombre + " (s/N) ?", "N");
+    borrarLibro(id, nombre) {
+      alert("Borrando Libro: " + id + " - " + nombre )
     },
 
-    editarLibro(nombre, autor) {
-      prompt("Nuevo Nombre (" + nombre + ") ?", nombre);
-      prompt("Nuevo Autor (" + autor + ") ?", autor);
+    editarLibro(id, nombre) {
+      alert("Editar Libro id: " + id + " - " + nombre);
     },
+
   },
 };
 </script>

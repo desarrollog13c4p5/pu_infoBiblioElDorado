@@ -1,3 +1,4 @@
+
 <template>
   <div id="app">
     <div class="container">
@@ -9,6 +10,7 @@
         <hr />
       </div>
 
+      <!-- Componentes -->
       <div class="row">
         <!--Menu de navegación-->
         <div class="col-auto list-group d-flex pe-4">
@@ -49,7 +51,6 @@
           <a v-else class="list-group-item list-group-item-action">
             <router-link to="/usuarios">Usuarios</router-link>
           </a>
-
         </div>
 
         <!-- Componentes -->
@@ -57,6 +58,7 @@
           <router-view />
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -64,7 +66,9 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      $test: "prueba vg",
+    };
   },
   methods: {
     handleSubmitForm() {},
