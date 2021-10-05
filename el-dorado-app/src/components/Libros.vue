@@ -36,7 +36,6 @@
           <div class="row"></div>
         </div>
         <hr />
-
       </form>
     </div>
 
@@ -78,7 +77,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr  v-for="item in Libros" :key="item.id">
+            <tr v-for="item in Libros" :key="item.id">
               <td>{{ item.id }}</td>
               <td>{{ item.nombre }}</td>
               <td>{{ item.autor }}</td>

@@ -165,7 +165,6 @@ export default {
         fecha: "",
       },
       filtro: "",
-      modEstado: "",
     };
   },
 
@@ -189,12 +188,13 @@ export default {
       }
     },
 
+
     seleccionarLibro(libro) {
       this.prestamo.libro = libro;
     },
 
-    entregarLibro(libro) {
-      prompt("Desea entregar el Libro " + libro + " (S/n) ?", "S");
+    entregarLibro(nombre) {
+      alert("Entregando el Libro " + nombre);
     },
 
   },

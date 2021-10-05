@@ -10,7 +10,7 @@
               type="text"
               id="inNombre"
               placeholder="Nombres del Usuario"
-              v-model="usuario.nombres"
+              v-model="nuevoUsuario.nombres"
               class="form-control"
               required
             />
@@ -22,18 +22,23 @@
               type="text"
               id="inApellido"
               placeholder="Apellidos del Usuario"
-              v-model="usuario.apellidos"
+              v-model="nuevoUsuario.apellidos"
               class="form-control"
               required
             />
           </div>
           <div class="col">
-            <button class="btn btn-primary">Crear</button>
+            <button class="btn btn-primary" :disabled="bloquear">Crear</button>
           </div>
         </div>
+        <hr />
       </form>
     </div>
-    <hr />
+
+    <!-- Alertas -->
+    <div class="alert alert-danger" role="alert" v-if="this.mensajeError != ''">
+      {{mensajeError}}
+    </div>
 
     <!-- Lista de Usuarios -->
     <div class="row">
@@ -49,10 +54,10 @@
           />
         </div>
         <div class="col-auto px-1">
-          <button class="btn btn-primary">Aplicar</button>
+          <button class="btn btn-primary" :disabled="bloquear">Aplicar</button>
         </div>
         <div class="col-auto px-1">
-          <button class="btn btn-secondary">Limpiar</button>
+          <button class="btn btn-secondary" :disabled="bloquear">Limpiar</button>
         </div>
       </div>
       <div class="row ps-4 pe-1">
@@ -60,63 +65,25 @@
           <thead>
             <tr id="cent">
               <th scope="col">Id</th>
-              <th scope="col">Nombre</th>
-              <th scope="col">Apelido</th>
+              <th scope="col">Nombres</th>
+              <th scope="col">Apelidos</th>
               <th scope="col">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>0003</td>
-              <td>Adriana María</td>
-              <td>Perez Oviedo</td>
+            <tr v-for="item in Usuarios" :key="item.id">
+              <td>{{ item.id }}</td>
+              <td>{{ item.nombres }}</td>
+              <td>{{ item.apellidos }}</td>
               <td id="cent">
                 <button
-                  @click.prevent="editarUsuario('Adriana', 'Perez')"
+                  @click.prevent="editarUsuario(item.id, item.nombres)"
                   class="btn btn-outline-success btn-sm p-1"
                 >
                   Editar
                 </button>
                 <button
-                  @click.prevent="borrarUsuario('Adriana Perez')"
-                  class="btn btn-outline-danger btn-sm p-1"
-                >
-                  Borrar
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>0002</td>
-              <td>Jorge</td>
-              <td>Diaz</td>
-              <td id="cent">
-                <button
-                  @click.prevent="editarUsuario('Jorge', 'Diaz')"
-                  class="btn btn-outline-success btn-sm p-1"
-                >
-                  Editar
-                </button>
-                <button
-                  @click.prevent="borrarUsuario('Jorge Diaz')"
-                  class="btn btn-outline-danger btn-sm p-1"
-                >
-                  Borrar
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>0001</td>
-              <td>Pedro</td>
-              <td>Umba</td>
-              <td id="cent">
-                <button
-                  @click.prevent="editarUsuario('Pedro', 'Umba')"
-                  class="btn btn-outline-success btn-sm p-1"
-                >
-                  Editar
-                </button>
-                <button
-                  @click.prevent="borrarUsuario('Pedro Umba')"
+                  @click.prevent="borrarUsuario(item.id, item.nombres)"
                   class="btn btn-outline-danger btn-sm p-1"
                 >
                   Borrar
@@ -132,43 +99,62 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
-      usuario: {
+      nuevoUsuario: {
         nombres: "",
         apellidos: "",
       },
       filtro: "",
+      bloquear: true,
+      Usuarios: [],
+      usuarioBorrar: {
+        id: "",
+        nombres: ""
+      },
     };
   },
+
+  created() {
+    console.log('Listando Usuarios');
+    this.listarUsuarios();
+  },
+
   methods: {
     handleSubmitForm() {
-      console.log(
-        "Creando Usuario: " +
-          this.usuario.nombres +
-          " " +
-          this.usuario.apellidos
-      );
       alert(
-        "Creando Usuario: " +
-          this.usuario.nombres +
-          " " +
-          this.usuario.apellidos
+        "Creando Usuario: " + this.nuevoUsuario.nombres + " " + this.nuevoUsuario.apellidos
       );
-      // this.$router.push({ name: "usuarios" });
-      this.usuario.nombres = "";
-      this.usuario.apellidos = "";
+    },
+
+    listarUsuarios() {
+      axios
+        .get('http://localhost:4000/api/usuarios')
+        .then((res) => {
+          this.Usuarios = res.data.reverse();
+          console.log(JSON.stringify(this.Usuarios));
+          this.mensajeError = ""
+          this.bloquear = false;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "No se puede traer la lista de Usuarios."
+        });
+      
+      this.nuevoUsuario.nombres = "";
+      this.nuevoUsuario.apellidos = "";
       this.filtro = "";
     },
 
-    borrarUsuario(nombre) {
-      prompt("Desea borrar el usuario " + nombre + " (s/N) ?", "N");
+    borrarUsuario(id, nombres) {
+      alert("Borrando el usuario: " + id + " - " + nombres);
     },
 
-    editarUsuario(nombre, apellido) {
-      prompt("Nuevo Nombre (" + nombre + ") ?", nombre);
-      prompt("Nuevo Apellido (" + apellido + ") ?", apellido);
+    editarUsuario(id, nombres) {
+      alert("Editando el usuario: " + id + " - " + nombres);
     },
   },
 };
