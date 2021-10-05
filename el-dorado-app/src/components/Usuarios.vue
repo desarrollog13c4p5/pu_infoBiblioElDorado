@@ -109,6 +109,7 @@ export default {
         apellidos: "",
       },
       filtro: "",
+      mensajeError: "",
       bloquear: true,
       Usuarios: [],
       usuarioBorrar: {
