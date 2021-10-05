@@ -6,6 +6,5 @@ Se implementa la administración para los préstamos de libros a usuarios de una
 Equipo de desarrollo:
 - Fredy Enrique Galindo Osma (frosma18@hotmail.com)
 - Pedro Umba (pedro.umba@hotmail.com)
-- Adriana Maria Buitrago Chalarca	(adrijun71@gmail.com)
 - Lina Sofia Centeno Centeno	(linasofia2410@hotmail.com)
 - Sergio Numael Linares Ducuara	(dranvius12@hotmail.com)
