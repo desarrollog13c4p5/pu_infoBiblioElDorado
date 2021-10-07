@@ -108,7 +108,7 @@
               >
                 Seleccionar
               </button>
-              <button v-if="item.prestamo == 'Vencido'"
+              <button v-else-if="item.prestamo == 'Vencido'"
                 @click.prevent="entregarLibro(item)"
                 class="btn btn-outline-danger btn-sm p-1"
               >
@@ -174,7 +174,7 @@ export default {
 
     listarPrestamos() {
       axios
-        .get('http://localhost:4000/prestamos/')
+        .get('http://localhost:5000/prestamos/')
         .then((res) => {
           this.Prestamos = res.data;
           console.log(JSON.stringify(this.Libros));

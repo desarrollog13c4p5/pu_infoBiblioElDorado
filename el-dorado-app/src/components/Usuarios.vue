@@ -126,9 +126,26 @@ export default {
 
   methods: {
     handleSubmitForm() {
-      alert(
-        "Creando Usuario: " + this.nuevoUsuario.nombres + " " + this.nuevoUsuario.apellidos
-      );
+      this.bloquear = true;
+
+      let apiURL =
+        "http://localhost:5000/usuarios/crear?nombres=" +
+        encodeURIComponent(this.nuevoUsuario.nombres) +
+        "&apellidos=" +
+        encodeURIComponent(this.nuevoUsuario.apellidos);
+      console.log(apiURL);
+
+      axios
+        .get(apiURL)
+        .then((res) => {
+          console.log(res.data);
+          this.listarUsuarios();
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "Error creando nuevo Libro, revice el Nombre y Autor e intentelo numevamente.";
+          this.bloquear = false;
+        });
     },
 
     listarUsuarios() {
@@ -150,12 +167,23 @@ export default {
       this.filtro = "";
     },
 
-    borrarUsuario(id, nombres) {
-      alert("Borrando el usuario: " + id + " - " + nombres);
+    borrarUsuario(id, nombre) {
+      // alert("Borrando el usuario: " + id + " - " + nombres);
+      console.log("Borrando " + nombre);
+      axios
+        .get('http://localhost:5000/usuarios/borrar?id=' + id)
+        .then((res) => {
+          console.log(res.data);
+          this.listarUsuarios();
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "No se borro Usuario " + nombre
+        });
     },
 
     editarUsuario(id, nombres) {
-      alert("Editando el usuario: " + id + " - " + nombres);
+      alert("No Implementado! (" + id + " - " + nombres + ")");
     },
   },
 };
