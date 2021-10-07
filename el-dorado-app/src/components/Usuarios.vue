@@ -143,7 +143,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
-          this.mensajeError = "Error creando nuevo Libro, revice el Nombre y Autor e intentelo numevamente.";
+          this.mensajeError = "Error creando nuevo Usuario, revice el Nombre y Apellidos e intentelo numevamente.";
           this.bloquear = false;
         });
     },
