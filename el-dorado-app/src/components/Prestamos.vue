@@ -9,7 +9,7 @@
             <input
               type="text"
               id="inNombre"
-              v-model="prestamo.libro"
+              v-model="prestamo.nombre"
               placeholder="Nombre del Libro"
               class="form-control"
               value=""
@@ -22,7 +22,7 @@
         <div class="row">
           <div class="col-5">
             <select
-              v-model="prestamo.usuario"
+              v-model="prestamo.idUsuario"
               name=""
               id="selUsuario"
               class="form-select pe-1"
@@ -49,7 +49,7 @@
           </div>
           <div class="col">
             <div class="col"></div>
-            <button class="col btn btn-primary">Prestar</button>
+            <button class="col btn btn-primary" :disabled="bloquear">Prestar</button>
           </div>
         </div>
         <div class="col">
@@ -59,9 +59,14 @@
       </form>
     </div>
 
+    <!-- Alertas -->
+    <div class="alert alert-danger" role="alert" v-if="this.mensajeError != ''">
+      {{mensajeError}}
+    </div>
+
     <!-- Lista de Libros -->
     <div class="row pb-3">
-      <h5>Lista de Libros</h5>
+      <h5>Lista de Prestamos</h5>
       <div class="row">
         <div class="col-5 pe-1">
           <div class="input-group">
@@ -75,7 +80,7 @@
           </div>
         </div>
         <div class="col-auto">
-          <button class="btn btn-primary" @click="showMod">Buscar</button>
+          <button class="btn btn-primary" :disabled="bloquear">Buscar</button>
         </div>
       </div>
     </div>
@@ -91,59 +96,29 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>0004</td>
-            <td>Los Gatos</td>
-            <td></td>
-            <td id="cent">Ninguno</td>
+          <tr v-for="item in Prestamos" :key="item.id">
+            <td>{{ item.id }}</td>
+            <td>{{ item.libro }}</td>
+            <td>{{ item.usuario }}</td>
+            <td id="cent">{{ item.prestamo }}</td>
             <td id="cent">
-              <button
-                @click.prevent="seleccionarLibro('Los Gatos')"
+              <button v-if="item.prestamo == 'Ninguno'"
+                @click.prevent="seleccionarLibro(item)"
                 class="btn btn-outline-primary btn-sm p-1"
               >
                 Seleccionar
               </button>
-            </td>
-          </tr>
-          <tr>
-            <td>0003</td>
-            <td>Atlas de Colombia</td>
-            <td>Jorge Diaz</td>
-            <td id="cent">Vencido</td>
-            <td id="cent">
-              <button
-                @click.prevent="entregarLibro('Atlas de Colombia')"
+              <button v-if="item.prestamo == 'Vencido'"
+                @click.prevent="entregarLibro(item)"
                 class="btn btn-outline-danger btn-sm p-1"
               >
                 Entregar
               </button>
-            </td>
-          </tr>
-          <tr>
-            <td>0002</td>
-            <td>El cuerpo Humano</td>
-            <td>Sandra Reyes</td>
-            <td id="cent">02/02/2022</td>
-            <td id="cent">
-              <button
-                @click.prevent="entregarLibro('El cuerpo Humano')"
+              <button v-else
+                @click.prevent="entregarLibro(item)"
                 class="btn btn-outline-success btn-sm p-1"
               >
                 Entregar
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>0001</td>
-            <td>Brujas</td>
-            <td></td>
-            <td id="cent">Ninguno</td>
-            <td id="cent">
-              <button
-                @click.prevent="seleccionarLibro('Brujas')"
-                class="btn btn-outline-primary btn-sm p-1"
-              >
-                Seleccionar
               </button>
             </td>
           </tr>
@@ -155,17 +130,27 @@
 </template>
 
 <script>
+import axios from "axios";
 
 export default {
   data() {
     return {
       prestamo: {
-        libro: "",
-        usuario: "",
+        nombre: "",
+        idLibro: "",
+        idUsuario: "",
         fecha: "",
       },
       filtro: "",
+      mensajeError: "",
+      bloquear: true,
+      Prestamos: [],
     };
+  },
+
+  created() {
+    console.log('Listando Prestamos');
+    this.listarPrestamos();
   },
 
   methods: {
@@ -175,26 +160,48 @@ export default {
           "Prestando libro: " +
             this.prestamo.libro +
             " a " +
-            this.prestamo.usuario +
+            this.prestamo.idUsuario +
             " hasta " +
             this.prestamo.fecha
         );
-        // this.$router.push({ name: "prestamos" });
         this.prestamo.libro = "";
-        this.prestamo.usuario = "";
+        this.prestamo.idUsuario = "";
         this.prestamo.fecha = "";
       } else {
         alert("Falta seeccionar un libro para prestar!");
       }
     },
 
-
-    seleccionarLibro(libro) {
-      this.prestamo.libro = libro;
+    listarPrestamos() {
+      axios
+        .get('http://localhost:4000/prestamos/')
+        .then((res) => {
+          this.Prestamos = res.data;
+          console.log(JSON.stringify(this.Libros));
+          this.mensajeError = ""
+          this.bloquear = false;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "No se puede traer la lista de Prestamos."
+        });
+      
+      this.prestamo.libro = "";
+      this.prestamo.idUsuario = "";
+      this.prestamo.fecha = "";
+      this.filtro = "";
     },
 
-    entregarLibro(nombre) {
-      alert("Entregando el Libro " + nombre);
+    seleccionarLibro(libro) {
+      this.prestamo.libro = libro.nombre;
+      this.prestamo.idLibro = libro.idLibro;
+    },
+
+    entregarLibro(libro) {
+      this.prestamo.libro = libro.nombre;
+      this.prestamo.idLibro = libro.idLibro;
+      this.prestamo.idUsuario = libro.idUsuario;
+      this.prestamo.fecha = libro.fecha;
     },
 
   },

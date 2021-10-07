@@ -133,7 +133,7 @@ export default {
 
     listarUsuarios() {
       axios
-        .get('http://localhost:4000/api/usuarios')
+        .get('http://localhost:5000/usuarios/')
         .then((res) => {
           this.Usuarios = res.data.reverse();
           console.log(JSON.stringify(this.Usuarios));

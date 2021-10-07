@@ -137,7 +137,7 @@ export default {
 
     listarLibros() {
       axios
-        .get('http://localhost:4000/api/libros')
+        .get('http://localhost:5000/libros/')
         .then((res) => {
           this.Libros = res.data.reverse();
           console.log(JSON.stringify(this.Libros));
