@@ -9,7 +9,7 @@
             <input
               type="text"
               id="inNombre"
-              v-model="prestamo.nombre"
+              v-model="prestamo.libro"
               placeholder="Nombre del Libro"
               class="form-control"
               value=""
@@ -31,9 +31,7 @@
               <option value="" selected disabled>
                 Seleccione un usuario...
               </option>
-              <option value="1">Usuario 1</option>
-              <option value="2">Usuario 2</option>
-              <option value="3">Usuario 3</option>
+              <option v-for="usuario in Usuarios" :value="usuario.id" :key="usuario.id">{{usuario.nombres + ' ' + usuario.apellidos}}</option>
             </select>
           </div>
           <div class="col-4">
@@ -49,7 +47,7 @@
           </div>
           <div class="col">
             <div class="col"></div>
-            <button class="col btn btn-primary" :disabled="bloquear">Prestar</button>
+            <button class="col btn btn-primary" :disabled="prestamo.libro == '' || bloquear">Prestar</button>
           </div>
         </div>
         <div class="col">
@@ -103,19 +101,19 @@
             <td id="cent">{{ item.prestamo }}</td>
             <td id="cent">
               <button v-if="item.prestamo == 'Ninguno'"
-                @click.prevent="seleccionarLibro(item)"
+                @click.prevent="seleccionarLibro(item.id, item.libro)"
                 class="btn btn-outline-primary btn-sm p-1"
               >
                 Seleccionar
               </button>
               <button v-else-if="item.prestamo == 'Vencido'"
-                @click.prevent="entregarLibro(item)"
+                @click.prevent="entregarLibro(item.id)"
                 class="btn btn-outline-danger btn-sm p-1"
               >
                 Entregar
               </button>
               <button v-else
-                @click.prevent="entregarLibro(item)"
+                @click.prevent="entregarLibro(item.id)"
                 class="btn btn-outline-success btn-sm p-1"
               >
                 Entregar
@@ -136,7 +134,7 @@ export default {
   data() {
     return {
       prestamo: {
-        nombre: "",
+        libro: "",
         idLibro: "",
         idUsuario: "",
         fecha: "",
@@ -145,6 +143,7 @@ export default {
       mensajeError: "",
       bloquear: true,
       Prestamos: [],
+      Usuarios: [],
     };
   },
 
@@ -155,21 +154,26 @@ export default {
 
   methods: {
     handleSubmitForm() {
-      if (this.prestamo.libro != "") {
-        alert(
-          "Prestando libro: " +
-            this.prestamo.libro +
-            " a " +
-            this.prestamo.idUsuario +
-            " hasta " +
-            this.prestamo.fecha
-        );
-        this.prestamo.libro = "";
-        this.prestamo.idUsuario = "";
-        this.prestamo.fecha = "";
-      } else {
-        alert("Falta seeccionar un libro para prestar!");
-      }
+      this.bloquear = true;
+
+      let apiURL =
+        "http://localhost:5000/prestamos/crear?idLibro=" +
+        encodeURIComponent(this.prestamo.idLibro) +
+        "&idUsuario=" +
+        encodeURIComponent(this.prestamo.idUsuario) + "&fechaEntrega=" + encodeURIComponent(this.prestamo.fecha);
+      console.log(apiURL);
+
+      axios
+        .get(apiURL)
+        .then((res) => {
+          console.log(res.data);
+          this.listarPrestamos();
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "Error prestando Libro.";
+          this.bloquear = false;
+        });
     },
 
     listarPrestamos() {
@@ -177,8 +181,9 @@ export default {
         .get('http://localhost:5000/prestamos/')
         .then((res) => {
           this.Prestamos = res.data;
-          console.log(JSON.stringify(this.Libros));
-          this.mensajeError = ""
+          // console.log(JSON.stringify(this.Prestamos));
+          // this.mensajeError = ""
+          this.listarUsuarios()
           this.bloquear = false;
         })
         .catch((error) => {
@@ -192,16 +197,44 @@ export default {
       this.filtro = "";
     },
 
-    seleccionarLibro(libro) {
-      this.prestamo.libro = libro.nombre;
-      this.prestamo.idLibro = libro.idLibro;
+    listarUsuarios() {
+      axios
+        .get('http://localhost:5000/usuarios/')
+        .then((res) => {
+          this.Usuarios = res.data;
+          // console.log(JSON.stringify(this.Prestamos));
+          this.mensajeError = ""
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "No se puede traer la lista de Usuarios."
+        });
     },
 
-    entregarLibro(libro) {
-      this.prestamo.libro = libro.nombre;
-      this.prestamo.idLibro = libro.idLibro;
-      this.prestamo.idUsuario = libro.idUsuario;
-      this.prestamo.fecha = libro.fecha;
+    seleccionarLibro(id, nombre) {
+      this.prestamo.libro = nombre;
+      this.prestamo.idLibro = id;
+    },
+
+    entregarLibro(id) {
+      this.bloquear = true;
+
+      let apiURL =
+        "http://localhost:5000/prestamos/borrar?id=" +
+        encodeURIComponent(id);
+      console.log(apiURL);
+
+      axios
+        .get(apiURL)
+        .then((res) => {
+          console.log(res.data);
+          this.listarPrestamos();
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "Error entregando Libro.";
+          this.bloquear = false;
+        });
     },
 
   },

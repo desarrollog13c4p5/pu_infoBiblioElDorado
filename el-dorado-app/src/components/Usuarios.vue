@@ -125,7 +125,7 @@ export default {
   },
 
   methods: {
-    handleSubmitForm() {
+    handleSubmitForm() {  // Crear Usuario
       this.bloquear = true;
 
       let apiURL =
@@ -143,7 +143,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
-          this.mensajeError = "Error creando nuevo Libro, revice el Nombre y Autor e intentelo numevamente.";
+          this.mensajeError = "Error creando nuevo Usuario, revice el Nombre y Apellidos e intentelo numevamente.";
           this.bloquear = false;
         });
     },
@@ -153,7 +153,7 @@ export default {
         .get('http://localhost:5000/usuarios/')
         .then((res) => {
           this.Usuarios = res.data.reverse();
-          console.log(JSON.stringify(this.Usuarios));
+          // console.log(JSON.stringify(this.Usuarios));
           this.mensajeError = ""
           this.bloquear = false;
         })
@@ -168,7 +168,6 @@ export default {
     },
 
     borrarUsuario(id, nombre) {
-      // alert("Borrando el usuario: " + id + " - " + nombres);
       console.log("Borrando " + nombre);
       axios
         .get('http://localhost:5000/usuarios/borrar?id=' + id)

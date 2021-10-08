@@ -132,7 +132,26 @@ export default {
 
   methods: {
     handleSubmitForm() {  // Crear Libro
-      alert('Creando Libro' + this.nuevoLibro.nombre + ' - ' + this.nuevoLibro.autor)
+      this.bloquear = true;
+
+      let apiURL =
+        "http://localhost:5000/libros/crear?nombre=" +
+        encodeURIComponent(this.nuevoLibro.nombre) +
+        "&autor=" +
+        encodeURIComponent(this.nuevoLibro.autor);
+      console.log(apiURL);
+
+      axios
+        .get(apiURL)
+        .then((res) => {
+          console.log(res.data);
+          this.listarLibros();
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "Error creando nuevo Libro, revice el Nombre y Autor e intentelo numevamente.";
+          this.bloquear = false;
+        });
     },
 
     listarLibros() {
@@ -140,7 +159,7 @@ export default {
         .get('http://localhost:5000/libros/')
         .then((res) => {
           this.Libros = res.data.reverse();
-          console.log(JSON.stringify(this.Libros));
+          // console.log(JSON.stringify(this.Libros));
           this.mensajeError = ""
           this.bloquear = false;
         })
@@ -155,11 +174,21 @@ export default {
     },
 
     borrarLibro(id, nombre) {
-      alert("Borrando Libro: " + id + " - " + nombre )
+      console.log("Borrando " + nombre);
+      axios
+        .get('http://localhost:5000/libros/borrar?id=' + id)
+        .then((res) => {
+          console.log(res.data);
+          this.listarLibros();
+        })
+        .catch((error) => {
+          console.log(error);
+          this.mensajeError = "No se borro Libro " + nombre
+        });
     },
 
     editarLibro(id, nombre) {
-      alert("Editar Libro id: " + id + " - " + nombre);
+      alert("No Implementado! (" + id + " - " + nombre + ")");
     },
 
   },
