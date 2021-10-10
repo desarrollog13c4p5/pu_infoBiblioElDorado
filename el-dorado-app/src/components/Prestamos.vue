@@ -144,12 +144,21 @@ export default {
       bloquear: true,
       Prestamos: [],
       Usuarios: [],
+      minFecha: '',
     };
   },
 
   created() {
     console.log('Listando Prestamos');
+    this.minFecha = '2021-10-09';
+    
     this.listarPrestamos();
+  },
+
+  mounted() {
+    let hoy = new Date();
+    document.getElementById("inFecha").min = hoy.getFullYear() + '-' + (hoy.getMonth() +1) + '-' + (hoy.getDate() +1);
+    console.log(document.getElementById("inFecha").min);
   },
 
   methods: {
