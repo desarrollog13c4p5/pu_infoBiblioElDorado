@@ -7,7 +7,7 @@
         <div class="col-12 d-flex justify-content-center pb-2 pt-3">
           <h3>El Dorado</h3>
         </div>
-        <hr />
+        <hr/>
       </div>
 
       <!-- Componentes -->

@@ -41,7 +41,7 @@
 
     <!-- Alertas -->
     <div class="alert alert-danger" role="alert" v-if="this.mensajeError != ''">
-      {{mensajeError}}
+      {{ mensajeError }}
     </div>
 
     <!-- Lista de Libros -->
@@ -61,7 +61,9 @@
           <button class="btn btn-primary" :disabled="bloquear">Aplicar</button>
         </div>
         <div class="col-auto px-1">
-          <button class="btn btn-secondary" :disabled="bloquear">Limpiar</button>
+          <button class="btn btn-secondary" :disabled="bloquear">
+            Limpiar
+          </button>
         </div>
       </div>
 
@@ -77,19 +79,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in Libros" :key="item.id">
-              <td>{{ item.id }}</td>
-              <td>{{ item.nombre }}</td>
+            <tr v-for="item in Libros" :key="item._id">
+              <td>{{ item._id }}</td>
+              <td>{{ item.nombre_libro }}</td>
               <td>{{ item.autor }}</td>
               <td id="cent">
                 <button
-                  @click.prevent="editarLibro(item.id, item.nombre)"
+                  @click.prevent="editarLibro(item._id, item.nombre_libro)"
                   class="btn btn-outline-success btn-sm p-1"
                 >
                   Editar
                 </button>
                 <button
-                  @click.prevent="borrarLibro(item.id, item.nombre)"
+                  @click.prevent="borrarLibro(item._id, item.nombre_libro)"
                   class="btn btn-outline-danger btn-sm p-1"
                 >
                   Borrar
@@ -100,8 +102,7 @@
         </table>
       </div>
     </div>
-
-  </div> 
+  </div>
 </template>
 
 <script>
@@ -120,54 +121,70 @@ export default {
       Libros: [],
       libroBorrar: {
         id: "",
-        nombre: ""
+        nombre: "",
       },
     };
   },
 
   created() {
-    console.log('Listando Libros');
+    console.log("Listando Libros");
     this.listarLibros();
   },
 
   methods: {
-    handleSubmitForm() {  // Crear Libro
+    handleSubmitForm() {
+      // Crear Libro
       this.bloquear = true;
 
       let apiURL =
-        "http://localhost:5000/libros/crear?nombre=" +
-        encodeURIComponent(this.nuevoLibro.nombre) +
-        "&autor=" +
-        encodeURIComponent(this.nuevoLibro.autor);
+        "http://localhost:3000/api/nuevo-libro"; //Enrutamiento con el back
       console.log(apiURL);
 
-      axios
-        .get(apiURL)
+
+      axios.post(apiURL, {
+
+      nombre_libro: this.nuevoLibro.nombre,
+      autor: this.nuevoLibro.autor
+    })
         .then((res) => {
           console.log(res.data);
           this.listarLibros();
         })
         .catch((error) => {
           console.log(error);
-          this.mensajeError = "Error creando nuevo Libro, revice el Nombre y Autor e intentelo numevamente.";
+          this.mensajeError =
+            "Error creando nuevo Libro, revice el Nombre y Autor e intentelo numevamente.";
           this.bloquear = false;
         });
+
+      // axios
+      //   .get(apiURL)
+      //   .then((res) => {
+      //     console.log(res.data);
+      //     this.listarLibros();
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //     this.mensajeError =
+      //       "Error creando nuevo Libro, revice el Nombre y Autor e intentelo numevamente.";
+      //     this.bloquear = false;
+      //   });
     },
 
     listarLibros() {
       axios
-        .get('http://localhost:5000/libros/')
+        .get("http://localhost:3000/api/libro")
         .then((res) => {
           this.Libros = res.data.reverse();
           // console.log(JSON.stringify(this.Libros));
-          this.mensajeError = ""
+          this.mensajeError = "";
           this.bloquear = false;
         })
         .catch((error) => {
           console.log(error);
-          this.mensajeError = "No se puede traer la lista de Libros."
+          this.mensajeError = "No se puede traer la lista de Libros.";
         });
-      
+
       this.nuevoLibro.nombre = "";
       this.nuevoLibro.autor = "";
       this.filtro = "";
@@ -176,21 +193,20 @@ export default {
     borrarLibro(id, nombre) {
       console.log("Borrando " + nombre);
       axios
-        .get('http://localhost:5000/libros/borrar?id=' + id)
+        .delete("http://localhost:3000/api/libro/" + id)
         .then((res) => {
           console.log(res.data);
           this.listarLibros();
         })
         .catch((error) => {
           console.log(error);
-          this.mensajeError = "No se borro Libro " + nombre
+          this.mensajeError = "No se borro Libro " + nombre;
         });
     },
 
     editarLibro(id, nombre) {
       alert("No Implementado! (" + id + " - " + nombre + ")");
     },
-
   },
 };
 </script>
